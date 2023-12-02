@@ -1,29 +1,5 @@
 # FAST_ASSESS
 
-Complete Guide for hosting fastapi. Below are the steps for hosting fastapi on aws ec2 and access it through anywhere on the internet.<br>
-[Click here for complete video](https://youtu.be/_719QPPARUw)
-
-<h1 align="center">
-  <a href="https://github.com/smurfcoders/fastapi-hosting">
-    <img src="https://raw.githubusercontent.com/smurfcoders/fastapi-hosting/master/Smurf%20coders.jpg">
-  </a>
-</h1>
-
-<div align="center">
-  Host any Fastapi application by using this tutorial - Subscribe to our youtube channel !
-</div>
-
-<div align="center">
-<br />
-
-[![license](https://img.shields.io/github/license/dec0dOS/amazing-github-template.svg?style=flat-square)](LICENSE)
-
-[![PRs welcome](https://img.shields.io/youtube/channel/views/UCmkU-qYoP19uM3ueLyhxEMg?color=red)](https://www.youtube.com/channel/UCmkU-qYoP19uM3ueLyhxEMg)
-[![made with hearth by smurfcoders](https://img.shields.io/badge/made%20with%20%E2%99%A5%20by-smurfcoders-ff1414.svg?style=flat-square)](https://github.com/smurfcoders)
-
-</div>
-
-
 ### Built With
 
 - [Fastapi](https://github.com/tiangolo/fastapi)
@@ -85,15 +61,8 @@ Go to the public ip provided by the instance add :8000 in the end as our api is 
 
 That's it you can now access your Fastapi from anywhere.
 
-> Got any doubts feel free to ask : [GitHub Discussions](https://github.com/smurfcoders/fastapi-hosting/discussions).
-
-
 ## License
 
 This project is licensed under the **MIT license**. Feel free to edit and distribute this template as you like.
 
 See [LICENSE](LICENSE) for more information.
-
-## Acknowledgements
-
-Thanks for reading do let us know any interesting topics to teach on our [youtube channel!](https://www.youtube.com/channel/UCmkU-qYoP19uM3ueLyhxEMg)
