@@ -2,21 +2,22 @@ from typing import Union
 from fastapi import FastAPI
 
 import cv2
-import base64
 import time
 import os
 
 app = FastAPI()
+slashOperator = "/"
+imageCount = 10
 
 def time_calculator():
     # Milliseconds Precision time data
     return int(time.time() * 1000)
 
 
-def image_capture(cap,timestamp,filePrefix):
+async def image_capture(cap,timestamp,filePrefix):
 
     #Initalization
-    currentFrame = 0
+    currentFrame = 1
 
     # Run a loop to continuously capture and save images
     while True:
@@ -28,7 +29,7 @@ def image_capture(cap,timestamp,filePrefix):
             break
 
         # Construct the filename with the timestamp
-        file_path = f"{filePrefix}/{timestamp}/image_{currentFrame}.jpg"
+        file_path = f"{filePrefix}{slashOperator}{timestamp}{slashOperator}image_{currentFrame}.jpg"
 
         # Save the image to the specified file path
         cv2.imwrite(file_path, frame)
@@ -39,44 +40,53 @@ def image_capture(cap,timestamp,filePrefix):
         # # Display the captured frame (optional, you can remove this line if not needed)
         # cv2.imshow('Captured Image', frame)
 
-        if currentFrame > 9:
+        # Loop break condition
+        if currentFrame > imageCount:
             break
-        
-    if currentFrame > 9:
+
+    # Checking the possibilty of all images captured succefully or not  
+    if currentFrame > imageCount:
         return True
+
     return False
 
 
-
-def capture():
+async def capture():
     # Initialize the webcam
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
-        return "Error: Could not open webcam."
+        return {"Error": "Could not open webcam."}
 
+    timeCalc = time_calculator()
     folderName = "CAPTURES"
 
     # Create a directory for storing captured images if it doesn't exist
     os.makedirs(folderName, exist_ok=True)
+    os.makedirs(folderName + slashOperator + str(timeCalc), exist_ok=True)
+
 
     # write images
-    success = image_capture(cap,time_calculator(),folderName)
-    if success == True:
-        return "Images Captured Successfully"
+    success = await image_capture(cap,timeCalc,folderName)
 
-    return "Something Went wrong"
+    if success == True:
+        return {"msg":"Images Captured Successfully"}
+
+    return {"error":"Something Went wrong, All images not captured"}
 
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello World": "Hello World"}
 
 
 @app.get("/test")
 def test():
-    return {"Hello": "Test API"}
+    return {"msg": "Test API"}
 
 @app.get("/access")
-def access():
-    return capture()
+async def access():
+    try:
+        return await capture()
+    except:
+        return {"exception":"Exceptions Occurred"}
