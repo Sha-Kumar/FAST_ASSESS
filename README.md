@@ -25,7 +25,7 @@ After the command is executed it will start the server.
 Now open the Chrome (or any) browser and hit the below url for the image capture to happen,
 
 ```
-http'://127.0.0.1:8000/access
+http://127.0.0.1:8000/access
 ```
 
 ## License
