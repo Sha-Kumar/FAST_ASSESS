@@ -116,17 +116,18 @@ async def process_images(images_request: ImagesRequest):
 
         # Get the current working directory
         current_working_directory = os.getcwd()
-        print(current_working_directory)
 
         # Create a directory for storing captured images if it doesn't exist
-        directory1 = '.'+ slashOperator + folderName
+        directory1 = current_working_directory + slashOperator + folderName
         if not os.path.exists(directory1):
             os.makedirs(directory1)
-        
+        print(directory1)
+
         directory2 = directory1 + slashOperator + str(timeCalc)
         if not os.path.exists(directory2):
             os.makedirs(directory2)
-
+        
+        print(directory2)
         for i, img_data in enumerate(images_request.images):
             # Extract base64 data from the image data URL
             _, img_base64 = img_data.split(',', 1)
@@ -138,7 +139,8 @@ async def process_images(images_request: ImagesRequest):
 
             # Save the image using OpenCV
             # filename = f'image_{i + 1}.jpg'
-            filename = f"{folderName}{slashOperator}{timeCalc}{slashOperator}image_{i + 1}.jpg"
+            filename = f"{directory2}{slashOperator}image_{i + 1}.jpg"
+            print(filename)
             cv2.imwrite(filename, img_np)
 
         return {"message": "Images received and saved successfully"}
