@@ -114,6 +114,10 @@ async def process_images(images_request: ImagesRequest):
         timeCalc = time_calculator()
         folderName = "CAPTURES"
 
+        # Get the current working directory
+        current_working_directory = os.getcwd()
+        print(current_working_directory)
+
         # Create a directory for storing captured images if it doesn't exist
         directory1 = '.'+ slashOperator + folderName
         if not os.path.exists(directory1):
