@@ -115,8 +115,13 @@ async def process_images(images_request: ImagesRequest):
         folderName = "CAPTURES"
 
         # Create a directory for storing captured images if it doesn't exist
-        os.makedirs(folderName, exist_ok=True)
-        os.makedirs(folderName + slashOperator + str(timeCalc), exist_ok=True)
+        directory1 = '.'+ slashOperator + folderName
+        if not os.path.exists(directory1):
+            os.makedirs(directory1)
+        
+        directory2 = directory1 + slashOperator + str(timeCalc)
+        if not os.path.exists(directory2):
+            os.makedirs(directory2)
 
         for i, img_data in enumerate(images_request.images):
             # Extract base64 data from the image data URL
