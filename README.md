@@ -4,7 +4,8 @@
 
 - [Fastapi](https://github.com/tiangolo/fastapi)
 - [Python](https://www.python.org/)
-- [AWS](https://aws.amazon.com/)
+- [OpenCV](https://aws.amazon.com/)
+- [AWS](https://pypi.org/project/opencv-python/)
 
 ## Getting Started
 
@@ -22,7 +23,15 @@ Command to run the API :
 python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 After the command is executed it will start the server.
-Now open the Chrome (or any) browser and hit the below url for the image capture to happen,
+Now open the Chrome (or any) browser.
+
+The test API :
+
+```
+http://127.0.0.1:8000/test
+```
+
+The API to capture images :
 
 ```
 http://127.0.0.1:8000/access
