@@ -1,11 +1,17 @@
-from fastapi import FastAPI, File, UploadFile, Body
+from fastapi import FastAPI
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
-
 
 import cv2
 import time
 import os
+import base64
+import numpy as np
+
+from pydantic import BaseModel
+
+class ImagesRequest(BaseModel):
+    images: List[str]
 
 app = FastAPI()
 app.add_middleware(
@@ -102,45 +108,31 @@ async def access():
         return {"exception":"Exceptions Occurred"}
 
 
-async def store(files):
-    timeCalc = time_calculator()
-    folderName = "CAPTURES"
-
-    # Create a directory for storing captured images if it doesn't exist
-    os.makedirs(folderName, exist_ok=True)
-    os.makedirs(folderName + slashOperator + str(timeCalc), exist_ok=True)
-
-
-    # write images
-    await image_store(files,timeCalc,folderName)
-    return {"msg":"Images Stored Successfully"}
-
-
-async def image_store(files,timestamp,filePrefix):
-
-    # Iterate through the uploaded files
-    currentFrame=1
-    for file in files:
-        # Read the image file
-        contents = await file.read()
-        np_array = np.frombuffer(contents, np.uint8)
-        image = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
-
-        # Generate a unique filename
-        file_path = f"{filePrefix}{slashOperator}{timestamp}{slashOperator}image_{currentFrame}.jpg"
-
-        # Save the image to the specified directory
-        cv2.imwrite(file_path, image)
-        currentFrame+=1
-
-
-@app.post("/upload-images/")
-async def upload_images(files: List[UploadFile] = File(...)):
+@app.post("/upload-images")
+async def process_images(images_request: ImagesRequest):
     try:
-        print(files)
-        value = await store(files)
-        return {"done":"done"}
-        # return JSONResponse(content=value, status_code=200)
+        timeCalc = time_calculator()
+        folderName = "CAPTURES"
+
+        # Create a directory for storing captured images if it doesn't exist
+        os.makedirs(folderName, exist_ok=True)
+        os.makedirs(folderName + slashOperator + str(timeCalc), exist_ok=True)
+
+        for i, img_data in enumerate(images_request.images):
+            # Extract base64 data from the image data URL
+            _, img_base64 = img_data.split(',', 1)
+            img_binary = base64.b64decode(img_base64)
+
+            # Convert binary data to NumPy array
+            nparr = np.frombuffer(img_binary, np.uint8)
+            img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+            # Save the image using OpenCV
+            # filename = f'image_{i + 1}.jpg'
+            filename = f"{folderName}{slashOperator}{timeCalc}{slashOperator}image_{i + 1}.jpg"
+            cv2.imwrite(filename, img_np)
+
+        return {"message": "Images received and saved successfully"}
     
     except Exception as e:
-        return JSONResponse(content={"error":"Something Went wrong"}, status_code=400)
+        return {"error":"Something Went wrong"}
