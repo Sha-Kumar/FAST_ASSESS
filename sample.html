@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Image Capture</title>
+</head>
+
+<body>
+    <h1>Webcam Image Capture</h1>
+
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="captureBtn">Capture Image</button>
+
+    <script>
+        let capturedImages = 0;
+
+        // Get access to the webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+            })
+            .catch((error) => {
+                console.error('Error accessing webcam:', error);
+            });
+
+        // Capture images from the webcam
+        document.getElementById('captureBtn').addEventListener('click', captureImage);
+
+        function captureImage() {
+            if (capturedImages < 10) {
+                const video = document.getElementById('video');
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                // Set canvas dimensions to match the video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                // Draw the current video frame onto the canvas
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Convert the canvas content to a data URL representing a PNG image
+                const imageDataURL = canvas.toDataURL('image/png');
+
+                // Call a function to send the captured image data to the FastAPI endpoint
+                sendImageToFastAPI(imageDataURL);
+
+                // Increase the captured images counter
+                capturedImages++;
+            } else {
+                alert('You have captured 10 images. Sending them to the FastAPI endpoint now.');
+            }
+        }
+
+        // Function to send captured image to the FastAPI endpoint
+        function sendImageToFastAPI(imageDataURL) {
+            const apiUrl = 'http://127.0.0.1:8000/upload-images/';  // Replace with your FastAPI endpoint
+            const formData = new FormData();
+
+            // Convert data URL to Blob
+            const blob = dataURLtoBlob(imageDataURL);
+
+            // Append the Blob to the FormData with the name 'file'
+            formData.append('files', blob, 'image.png');
+
+            // Perform a fetch to send the image data to the FastAPI endpoint
+
+            fetch(apiUrl, {
+                method: 'POST',
+                // body: formData,
+                body: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('FastAPI response:', data);
+                })
+                .catch((error) => {
+                    console.error('Error sending image to FastAPI:', error);
+                });
+        }
+
+        // Function to convert data URL to Blob
+        function dataURLtoBlob(dataURL) {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,10 +1,21 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, Body
+from typing import List
+from fastapi.middleware.cors import CORSMiddleware
+
 
 import cv2
 import time
 import os
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 slashOperator = "/"
 imageCount = 10
 
@@ -89,3 +100,47 @@ async def access():
         return await capture()
     except:
         return {"exception":"Exceptions Occurred"}
+
+
+async def store(files):
+    timeCalc = time_calculator()
+    folderName = "CAPTURES"
+
+    # Create a directory for storing captured images if it doesn't exist
+    os.makedirs(folderName, exist_ok=True)
+    os.makedirs(folderName + slashOperator + str(timeCalc), exist_ok=True)
+
+
+    # write images
+    await image_store(files,timeCalc,folderName)
+    return {"msg":"Images Stored Successfully"}
+
+
+async def image_store(files,timestamp,filePrefix):
+
+    # Iterate through the uploaded files
+    currentFrame=1
+    for file in files:
+        # Read the image file
+        contents = await file.read()
+        np_array = np.frombuffer(contents, np.uint8)
+        image = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+
+        # Generate a unique filename
+        file_path = f"{filePrefix}{slashOperator}{timestamp}{slashOperator}image_{currentFrame}.jpg"
+
+        # Save the image to the specified directory
+        cv2.imwrite(file_path, image)
+        currentFrame+=1
+
+
+@app.post("/upload-images/")
+async def upload_images(files: List[UploadFile] = File(...)):
+    try:
+        print(files)
+        value = await store(files)
+        return {"done":"done"}
+        # return JSONResponse(content=value, status_code=200)
+    
+    except Exception as e:
+        return JSONResponse(content={"error":"Something Went wrong"}, status_code=400)
