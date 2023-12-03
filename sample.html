@@ -52,15 +52,15 @@
             images.push(imageData);
 
             if (images.length < 10) {
-                setTimeout(captureImages, 1000); // Capture every 1 second
+                setTimeout(captureImages, 180); // Capture every 1 second
             } else {
                 stopCapture();
             }
         }
 
         async function sendImages() {
-            // const apiUrl = 'http://16.16.215.247:8000/upload-images'; // Replace with your FastAPI server endpoint
-            const apiUrl = 'http://127.0.0.1:8000/upload-images'; // Replace with your FastAPI server endpoint
+            const apiUrl = 'http://16.16.215.247:8000/upload-images'; // Replace with your FastAPI server endpoint
+            // const apiUrl = 'http://127.0.0.1:8000/upload-images'; // Replace with your FastAPI server endpoint
 
             try {
                 const response = await fetch(apiUrl, {
