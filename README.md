@@ -34,7 +34,7 @@ http://127.0.0.1:8000/test
 The API to capture images :
 
 ```
-http://127.0.0.1:8000/access
+http://127.0.0.1:8000/upload-images/
 ```
 
 ## License
